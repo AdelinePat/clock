@@ -1,4 +1,5 @@
 import tkinter as tk
+import time
 
 class ClockApp:
     def __init__(self, root):
@@ -66,6 +67,4 @@ class ClockApp:
         pass
 
 
-root = tk.Tk()
-app = ClockApp(root)
-root.mainloop()
+
