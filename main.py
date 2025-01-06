@@ -16,8 +16,8 @@ def choose_alarm():
 
 alarm = None
 alarm_choice = choose_alarm()
-if alarm_choice == "yes":
-    set_alarm()
+# if alarm_choice == "yes":
+#     set_alarm()
 
 
 
