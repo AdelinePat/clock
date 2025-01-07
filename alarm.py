@@ -7,21 +7,25 @@ import time
 #print(clock_display)
 
 def set_alarm():
-    user_alarm = input() #return tuple (hh,mm,ss)
-    return user_alarm
+    alarm_hours = int(input("Enter alarm hours  (0-23): "))
+    alarm_minutes = int(input("Enter alarm minutes (0-59): "))
+    alarm_seconds = int(input("Enter alarm seconds (0-59): ")) 
+    user_alarm = (alarm_hours, alarm_minutes, alarm_seconds)
+    return user_alarm #return tuple (hh,mm,ss) ; alarm = set_alarm()
 
-alarm_time = set_alarm() #(12,15,45) 
+# Test values 2
+#alarm_time = set_alarm() #(12,15,45) 
 
-def display_alarm(clock, alarm_time):
-    if clock == alarm_time:
+# In display: [display_time_variable] += display_alarm(clock, alarm)
+# Assuming it's in str format
+def display_alarm(clock, alarm):
+    if clock == alarm:
         return "Ring ring! Ring ring!"
     else:
         return ""
 
 
-
-
-
+# Blinking message (each seconds, it dissapear and reappear)
         #while clock[1] < alarm_time[1] - 10:
             #if clock[2] % 2 == 0:
                 #print("Ring ring! Ring ring!")
@@ -30,9 +34,10 @@ def display_alarm(clock, alarm_time):
     #if clock[1] = alarm_time[1] + 10
         #unprint?
 
+# Yet another test value
 #display_alarm(clock, alarm_time)
 
-
+# Test main()
 #while (True):
 #    print(clock_display, end='\r')
 #    temp = clock[2]+1
