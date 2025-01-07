@@ -22,8 +22,22 @@ def set_time():
         if second < 0 or second > 59:
             print("Please enter a number between 0 and 59!")
 
-    time = (str(hour), str(minute), str(second))
+    time = (hour, minute, second) #(h,m,s)
     return time
+
+def clock_ticking(clock):
+    clock = (clock[0], clock[1], clock[2]+1)
+    
+    if clock[2] == 60:
+        clock = (clock[0], clock[1]+1, 0)  
+
+    if clock[1] == 60:
+        clock = (clock[0]+1, 0, clock[2]) 
+    
+    if clock[0] == 24:
+        clock = (0, clock[1], clock[2]) 
+    
+    return clock
 
 # def clock_ticking
 
@@ -47,7 +61,7 @@ def set_alarm():
         if alarm_second < 0 or alarm_second > 59:
             print("Please enter a number between 0 and 59!")
 
-    user_alarm = (str(alarm_hour), str(alarm_minute), str(alarm_second))
+    user_alarm = (alarm_hour, alarm_minute, alarm_second)
     return user_alarm
 
 def choose_format():
@@ -59,18 +73,41 @@ def choose_alarm():
     alarm_choice = input("Do you want to set an alarm ?(yes/no):").lower().strip()
     if alarm_choice == "yes" or alarm_choice == "y":
         alarm_clock = set_alarm()
+    else:
+        alarm_clock = None    
     return alarm_clock
 
+def format_time(time):
+    if len(str(time[0])) == 1:
+        temp_str = "0" + str(time[0]) + ":"
+    else:
+        temp_str = str(time[0]) + ":"
+
+    if len(str(time[1])) == 1:
+        temp_str += "0" + str(time[1]) + ":"
+    else:
+        temp_str += str(time[1]) + ":"
+
+    if len(str(time[2])) == 1:
+        temp_str += "0" + str(time[2])
+    else:
+        temp_str += str(time[2])
+    
+    return temp_str
+
 # update time in terminal
-def display_time(current_time, max_display, alarm, message=""):  
-    current_time_str = current_time[0] + ":" + current_time[1] + ":" + current_time[2] + " "
-    alarm_str = "alarm : " + alarm[0] + ":" + alarm[1] + ":" + alarm[2] + " "
-
+def display_time(current_time, max_display, alarm, message=""):
+    current_time_str = format_time(current_time)
+   
+    #current_time_str = str(current_time[0]) + ":" + str(current_time[1]) + ":" + str(current_time[2]) + " "
+    if alarm:
+        #alarm_str = "alarm : " + str(alarm[0]) + ":" + str(alarm[1]) + ":" + str(alarm[2]) + " " 
+        alarm_str = " ; alarm : " + format_time(alarm)
+    else:
+        alarm_str = ""
     print("\r" + current_time_str + alarm_str + message + " ", end="")
-    if int(current_time[2]) == int(alarm[2]) + max_display:
+    if alarm and int(current_time[2]) == int(alarm[2]) + max_display:
         cls()
-
-        
 
 def display_alarm(clock, alarm, max_display):
     if alarm and clock >= alarm and int(clock[2]) < int(alarm[2])+max_display:
@@ -91,14 +128,17 @@ def main():
     max_display = 10 #10 seconds
 
     alarm = choose_alarm()
+    clock = set_time()
     
     cls()
     while True :
         
-        #time.sleep(1.0)
+        time.sleep(1.0)
         #clock = datetime.datetime.now()
+        clock = clock_ticking(clock)
 
-        current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
+        #current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
+        current_time = (clock[0], clock[1], clock[2])
         message = display_alarm(current_time, alarm, max_display)
         display_time(current_time, max_display, alarm, message)
         
