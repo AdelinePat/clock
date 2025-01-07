@@ -2,79 +2,94 @@ import time, datetime, keyboard, os
 def cls():
      os.system('cls' if os.name=='nt' else 'clear')
 
-def set_time():
+def clock_ticking(clock):
+    
+    if len(clock) == 4:
+        clock = (clock[0], clock[1], clock[2]+1, clock[3])
+
+        if clock[2] == 60:
+            clock = (clock[0], clock[1]+1, 0, clock[3])  
+
+        if clock[1] == 60:
+            clock = (clock[0]+1, 0, clock[2], clock[3]) 
+
+        if clock[0] == 12 and clock[1] == 0 and clock[2] == 0:
+            if clock[3] == "AM":
+                clock = (clock[0], clock[1], clock[2], "PM")
+            else:
+                clock = (clock[0], clock[1], clock[2], "AM")
+
+        if clock[0] == 13:
+            clock = (0, clock[1], clock[2], clock[3]) 
+
+    else:
+        clock = (clock[0], clock[1], clock[2]+1)
+
+        if clock[2] == 60:
+            clock = (clock[0], clock[1]+1, 0)  
+
+        if clock[1] == 60:
+            clock = (clock[0]+1, 0, clock[2]) 
+
+        if clock[0] == 24:
+            clock = (0, clock[1], clock[2]) 
+    
+    return clock
+
+
+def set_time(format):
+    min_hour = 0
+    max_hour = 23
     hour = -1
     minute = -1
     second = -1
 
-    while hour < 0 or hour > 23:
-        hour = int(input("Enter the hours (0-23): "))
-        if hour < 0 or hour > 23:
-            print("Please enter a number between 0 and 23!")
+    if format == "12h":
+        half_day = ""
+        while half_day != "AM" and half_day != "PM":
+            half_day = input("AM or PM? ").upper().strip()
+        min_hour = 1
+        max_hour = 12
     
+    while hour < min_hour or hour > max_hour:
+        hour = int(input(f"Enter hours (0-{max_hour}): "))
+        if hour < 0 or hour > max_hour:
+            print(f"Please enter a number between 0 and {max_hour}!")
+
     while minute < 0 or minute > 59:
-        minute = int(input("Enter the minutes (0-59): "))
+        minute = int(input("Enter minutes (0-59): "))
         if minute < 0 or minute > 59:
             print("Please enter a number between 0 and 59!")
-    
+
     while second < 0 or second > 59:
-        second = int(input("Enter the seconds (0-59: "))
+        second = int(input("Enter seconds (0-59): "))
         if second < 0 or second > 59:
             print("Please enter a number between 0 and 59!")
 
-    time = (hour, minute, second) #(h,m,s)
+    if format == "12h":
+        time = (hour, minute, second, half_day)
+    else:
+        time = (hour, minute, second)
+
     return time
-
-def clock_ticking(clock):
-    clock = (clock[0], clock[1], clock[2]+1)
-    
-    if clock[2] == 60:
-        clock = (clock[0], clock[1]+1, 0)  
-
-    if clock[1] == 60:
-        clock = (clock[0]+1, 0, clock[2]) 
-    
-    if clock[0] == 24:
-        clock = (0, clock[1], clock[2]) 
-    
-    return clock
-
-# def clock_ticking
-
-def set_alarm():
-    alarm_hour = -1
-    alarm_minute = -1
-    alarm_second = -1
-
-    while alarm_hour < 0 or alarm_hour > 23:
-        alarm_hour = int(input("Enter alarm hours (0-23): "))
-        if alarm_hour < 0 or alarm_hour > 23:
-            print("Please enter a number between 0 and 23!")
-
-    while alarm_minute < 0 or alarm_minute > 59:
-        alarm_minute = int(input("Enter alarm minutes (0-59): "))
-        if alarm_minute < 0 or alarm_minute > 59:
-            print("Please enter a number between 0 and 59!")
-
-    while alarm_second < 0 or alarm_second > 59:
-        alarm_second = int(input("Enter alarm seconds (0-59): "))
-        if alarm_second < 0 or alarm_second > 59:
-            print("Please enter a number between 0 and 59!")
-
-    user_alarm = (alarm_hour, alarm_minute, alarm_second)
-    return user_alarm
 
 def choose_format():
     """ Ask the user to choose between 12h or 24h format """
-    format_choice = int(input("Choose the time format (12h/24h): "))
+    format_choice = ""
+    while format_choice != "12h" and format_choice != "24h":
+        format_choice = input("Choose the time format (12h/24h): ")
+        if format_choice != "12h" and format_choice != "24h":
+            print("Enter 12h or 24h to continue!")
     return format_choice
 
-def choose_alarm():
-    alarm_choice = input("Do you want to set an alarm ?(yes/no):").lower().strip()
-    if alarm_choice == "yes" or alarm_choice == "y":
-        alarm_clock = set_alarm()
-    else:
-        alarm_clock = None    
+def choose_alarm(format):
+    alarm_choice = ""
+    while alarm_choice != "yes" and alarm_choice != "y" and alarm_choice != "no" and alarm_choice != "n":
+        alarm_choice = input("Do you want to set an alarm ?(yes/no):").lower().strip()
+        if alarm_choice == "yes" or alarm_choice == "y":
+            alarm_clock = set_time(format)
+        else:
+            alarm_clock = None    
     return alarm_clock
 
 def format_time(time):
@@ -92,6 +107,9 @@ def format_time(time):
         temp_str += "0" + str(time[2])
     else:
         temp_str += str(time[2])
+
+    if len(time) == 4:
+        temp_str += " " + time[3]
     
     return temp_str
 
@@ -127,8 +145,9 @@ def display_alarm(clock, alarm, max_display):
 def main():
     max_display = 10 #10 seconds
 
-    alarm = choose_alarm()
-    clock = set_time()
+    format = choose_format() # value : "12h" / "24h"
+    alarm = choose_alarm(format) # value: (h,m,s)
+    clock = set_time(format) # value: (h,m,s)
     
     cls()
     while True :
@@ -138,9 +157,8 @@ def main():
         clock = clock_ticking(clock)
 
         #current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
-        current_time = (clock[0], clock[1], clock[2])
-        message = display_alarm(current_time, alarm, max_display)
-        display_time(current_time, max_display, alarm, message)
+        message = display_alarm(clock, alarm, max_display)
+        display_time(clock, max_display, alarm, message)
         
         
         #TODO need to not actualize clock variable when paused
