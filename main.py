@@ -1,4 +1,6 @@
 import time, datetime, keyboard, os
+def cls():
+     os.system('cls' if os.name=='nt' else 'clear')
 
 def set_time():
     hour = int(input("Enter the hours (0-23): "))
@@ -24,30 +26,38 @@ def choose_alarm():
     return alarm_choice
 
 # update time in terminal
-def display_time(current_time, message, alarm_str, alarm_choice):  
+def display_time(current_time, alarm_str, alarm_choice, max_display, alarm, message):  
         current_time_str = current_time[0] + ":" + current_time[1] + ":" + current_time[2] + " " 
+        
         if alarm_choice == "yes":
             print("\r" + current_time_str + alarm_str + message + " ", end="")
+            if int(current_time[2]) == int(alarm[2]) + max_display:
+                cls()
         else:
             print("\r" + current_time_str + " ", end="")
 
+        
+
 # In display_time: current_time += display_alarm(clock, alarm)
-def display_alarm(clock, alarm):
-    if clock == alarm:
+def display_alarm(clock, alarm, max_display):
+    if alarm and clock >= alarm and int(clock[2]) < int(alarm[2])+max_display:
         ring = "Ring ring! Ring ring!"
+        message = (f"{ring:>30}")
         # Blinking message
         #while clock[1] < alarm_time[1] + 1:
             #if clock[2] % 2 == 0:
                 #return "Ring ring! Ring ring!"
             #else:
                 #return ""   
-        return (f"{ring:>10}")
+        return message
     else:
-        return " "   
+        message = ""
+        return message
         
 def main():
-    alarm = None
+    alarm = ()
     alarm_choice = choose_alarm()
+    max_display = 10 #10 seconds
 
     if alarm_choice == "yes":
         alarm = set_alarm()
@@ -55,18 +65,25 @@ def main():
     else:
         alarm_str = ""
         
+
     # Loop displaying time for 10 seconds
+    
+    cls()
     while True :
         time.sleep(1.0)
         clock = datetime.datetime.now()
-        current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
-        message = display_alarm(current_time, alarm)
-        display_time(current_time, message, alarm_str, alarm_choice)
 
+        current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
+        message = display_alarm(current_time, alarm, max_display)
+        display_time(current_time, alarm_str, alarm_choice, max_display, alarm, message)
+        
+        
         #TODO need to not actualize clock variable when paused
         try:
             if keyboard.is_pressed('a'):
                 keyboard.wait('b')
         except:
             print("error")
+        
+        
 main()
