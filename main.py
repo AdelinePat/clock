@@ -123,12 +123,14 @@ def display_time(current_time, max_display, alarm, message=""):
         alarm_str = " ; alarm : " + format_time(alarm)
     else:
         alarm_str = ""
+
     print("\r" + current_time_str + alarm_str + message + " ", end="")
-    if alarm and int(current_time[2]) == int(alarm[2]) + max_display:
+
+    if alarm and current_time[0] * 3600 + current_time[1] * 60 + current_time[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
         cls()
 
 def display_alarm(clock, alarm, max_display):
-    if alarm and clock >= alarm and int(clock[2]) < int(alarm[2])+max_display:
+    if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
         ring = "Ring ring! Ring ring!"
         message = (f"{ring:>30}")
         # Blinking message
