@@ -16,7 +16,8 @@ def set_alarm():
 # Test values 2
 #alarm_time = set_alarm() #(12,15,45) 
 
-# In display: [display_time_variable] += display_alarm(clock, alarm)
+# **ignore this** In display: [display_time_variable] += display_alarm(clock, alarm)
+# In display_time: current_time += display_alarm(Time, alarm)
 # Assuming it's in str format
 def display_alarm(clock, alarm):
     if clock == alarm:
