@@ -1,5 +1,6 @@
 import time, datetime, keyboard, os
-from timeclass import Time 
+from timeclass import Time
+from timeclass import Alarm 
 
 def cls():
      os.system('cls' if os.name=='nt' else 'clear')
@@ -12,9 +13,9 @@ def set_time(format):
     second = -1
 
     if format == "12h":
-        half_day = ""
-        while half_day != "AM" and half_day != "PM":
-            half_day = input("AM or PM? ").upper().strip()
+        half_day = input("AM or PM? ").upper().strip()
+        if half_day != "AM" and half_day != "PM":
+            return set_time(format)      
         min_hour = 1
         max_hour = 12
     
@@ -37,7 +38,7 @@ def set_time(format):
         # time = (hour, minute, second, half_day)
         if half_day == "AM":
             if hour == 12:
-                time = Time(0,minute,second, format)
+                time = Time(0, minute,second, format)
             else:
                 time = Time(hour, minute, second, format)
         else:
@@ -45,100 +46,93 @@ def set_time(format):
                 time = Time(hour, minute, second, format)
             else:
                 time = Time(hour+12, minute, second, format)
-        
-
     else:
         # time = (hour, minute, second)
-        time = Time(hour, minute, second)
-        
+        time = Time(hour, minute, second) 
 
     return time
 
 def choose_format():
-    format_choice = input("Choose the time format (12h/24h): ")
+    format_choice = input("Choose the time format (12h/24h): ").lower().strip()
     if format_choice != "12h" and format_choice != "24h":
         return choose_format()
     else:
         return format_choice
 
 def choose_alarm(format):
-    alarm_choice = ""
-    while alarm_choice != "yes" and alarm_choice != "y" and alarm_choice != "no" and alarm_choice != "n":
-        alarm_choice = input("Do you want to set an alarm ?(yes/no):").lower().strip()
-        if alarm_choice == "yes" or alarm_choice == "y":
-            alarm_clock = set_time(format)
-        else:
-            alarm_clock = None    
+    alarm_choice = input("Do you want to set an alarm ?(yes/no):").lower().strip()
+    if alarm_choice != "yes" and alarm_choice != "y" and alarm_choice != "no" and alarm_choice != "n":
+        return choose_alarm()
+    elif alarm_choice == "yes" or alarm_choice == "y":
+        alarm = set_time(format)
+        alarm_clock = Alarm(alarm.hour, alarm.minute, alarm.second, format, True)
+    else:
+        alarm_clock = Alarm(0, 0, 0, "24h", False)
     return alarm_clock
 
-def format_time(time):
-    if len(str(time[0])) == 1:
-        temp_str = "0" + str(time[0]) + ":"
-    else:
-        temp_str = str(time[0]) + ":"
 
-    if len(str(time[1])) == 1:
-        temp_str += "0" + str(time[1]) + ":"
-    else:
-        temp_str += str(time[1]) + ":"
+# def display_alarm(clock, alarm, max_display):
+#      if alarm and clock.in_seconds() >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
+#         ring = "Ring ring! Ring ring!"
+#         message = (f"{ring:>30}")
 
-    if len(str(time[2])) == 1:
-        temp_str += "0" + str(time[2])
-    else:
-        temp_str += str(time[2])
+    # if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
+    #     ring = "Ring ring! Ring ring!"
+    #     message = (f"{ring:>30}")
 
-    if len(time) == 4:
-        temp_str += " " + time[3]
-    
-    return temp_str
 
-# update time in terminal
-def display_time(current_time, max_display, alarm, message=""):
-    current_time_str = format_time(current_time)
-   
-    #current_time_str = str(current_time[0]) + ":" + str(current_time[1]) + ":" + str(current_time[2]) + " "
-    if alarm:
-        #alarm_str = "alarm : " + str(alarm[0]) + ":" + str(alarm[1]) + ":" + str(alarm[2]) + " " 
-        alarm_str = " ; alarm : " + format_time(alarm)
-    else:
-        alarm_str = ""
-
-    print("\r" + current_time_str + alarm_str + message + " ", end="")
-
-    if alarm and current_time[0] * 3600 + current_time[1] * 60 + current_time[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
-        cls()
-
-def display_alarm(clock, alarm, max_display):
-    if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
-        ring = "Ring ring! Ring ring!"
-        message = (f"{ring:>30}")
         # Blinking message
         #while clock[1] < alarm_time[1] + 1:
             #if clock[2] % 2 == 0:
                 #return "Ring ring! Ring ring!"
             #else:
                 #return ""   
+        # return message
+    # else:
+    #     message = ""
+    #     return message
+        
+
+def display_time(clock, alarm):
+    if alarm:
+        print("\r" + f"{clock}" + f"{alarm}", end="")
+    else:
+        print("\r" + f"{clock}", end="")
+
+def display_alarm(clock_seconds, alarm_seconds):
+    if clock_seconds >= alarm_seconds and clock_seconds <= alarm_seconds + Alarm.max_display:
+        ring = "Ring ring! Ring ring!"
+        message = (f"{ring:>30}")
         return message
     else:
-        message = ""
-        return message
-        
+        return ""
+    
 def main():
-    max_display = 10 #10 seconds
-
     format = choose_format() # value : "12h" / "24h"
     # alarm = choose_alarm(format) # value: (h,m,s)
     clock = set_time(format) # value: (h,m,s)
-
+    alarm = choose_alarm(format) #  retourne alarm_clock = Alarm(alarm.hour, alarm.minute, alarm.second, True)
+    clock_seconds = clock.in_seconds()
+    alarm_seconds = alarm.in_seconds()
     
+   
     cls()
     while True :
         
         time.sleep(1.0)
         #clock = datetime.datetime.now()
         clock.increment_time()
-        print("\r" + f"{clock}", end="")
 
+        # print(f"ceci est un test d'alarme :" + alarm.display_alarm(clock))
+        
+        if alarm.enabled:
+            message = display_alarm(clock_seconds, alarm_seconds)
+            print("\r" + f"{clock}" + f"{alarm}" + f"{message}", end="")
+             
+            
+        else:
+            print("\r" + f"{clock}", end="")
+        
         #current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
         # message = display_alarm(clock, alarm, max_display)
         # display_time(clock, max_display, alarm, message)
@@ -150,6 +144,5 @@ def main():
                 keyboard.wait('b')
         except:
             print("error")
-        
         
 main()
