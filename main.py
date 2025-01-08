@@ -178,8 +178,8 @@ def main():
         message = display_alarm(clock, alarm, max_display)
         display_time(clock, max_display, alarm, message)
         
-        for i in range(10):
-            time.sleep(0.1)
+        for i in range(5):
+            time.sleep(0.2)
             try:
                 if keyboard.is_pressed('space'):
                     keyboard.wait('space')
