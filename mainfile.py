@@ -87,13 +87,13 @@ def set_alarm():
         return
     input_unit_alarm(2)
     input_unit_alarm(3)
+    print(f"{cursor_line_5}Entrez {unit[4]}", end="")
+    while True:
+        alarm[4] = input(f"{cursor_line_4}Alarme : {alarm[0]}H {alarm[2]}M {alarm[3]}S __\033[2D").strip(" ").upper()
+        if alarm[4] not in ("AM", "PM"):
+            continue
+        else: break
     if mode%2 == 0:
-        print(f"{cursor_line_5}Entrez {unit[4]}", end="")
-        while True:
-            alarm[4] = input(f"{cursor_line_4}Alarme : {alarm[0]}H {alarm[2]}M {alarm[3]}S __\033[2D").strip(" ").upper()
-            if alarm[4] not in ("AM", "PM"):
-                continue
-            else: break
         if alarm[4] == "PM" and str(alarm[0]) != "12":
             alarm[1] = str(int(alarm[0])+12)
         elif alarm[4] == "AM" and str(alarm[0]) == "12":
@@ -129,8 +129,9 @@ def input_hours():
             print(f"{cursor_line_6}/!\ Entrez une valeur correcte à l'unité (entre 00 et {unit_max[(mode%2)]})", end="")
             continue
         elif len(str(value)) == 2:
-            
             print(f"{cursor_line_4}{cursor_lightcls}", end="")
+            
+            return value
             
 
 
