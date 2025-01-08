@@ -4,13 +4,13 @@ import datetime, time, threading, unidecode
 # Bouts de phrases à insérer par rapport à l'info donnée par datetime
 # print_fr_day = ('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi')
 # print_fr_month = (None, 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
-print_fr_unit = ["l'heure", "les minutes", "les secondes", "AM / PM"]
+print_fr_unit = ["l'heure", "les minutes", "les secondes"]
 
 # Variables faussement boléennes, mode permet de désigner l'index 0 ou 1 en étant %2
 stop = False
 paused = False
 set_clock_running = False
-automatic = True
+automatic = False
 convention = 1
 
 # Infos nécessaires pour l'input des unités H S M : bouts de phrases pour print, unit_b pour placer le curseur au bon espace, et le maximum
@@ -40,7 +40,7 @@ clock = ("__","__","__")
 alarm = ("__","__","__")
 custom_hours = ("--")
 custom_minutes = ("--")
-custom_secondes = ("--")
+custom_seconds = ("--")
 
 def define_clock():
     global clock
@@ -53,22 +53,41 @@ def define_clock():
             time.sleep(0.05)
         elif automatic == False:
             if set_clock_running == False:
-                clock = (custom_hours, custom_minutes, custom_secondes)
-                time.sleep(0.05)
+                clock = (custom_hours, custom_minutes, custom_seconds)
+                time.sleep(0.9)
         if stop == True:
             return
 
+def clock_ticking():
+    global custom_hours, custom_minutes, custom_seconds
+    while True:
+        if custom_hours != "--" and set_clock_running == False:
+            if int(custom_seconds) < 59:
+                custom_seconds = int(custom_seconds)+1
+            else:
+                custom_seconds = "00"
+                if int(custom_minutes) < 59:
+                    custom_minutes = int(custom_minutes)+1
+                else:
+                    custom_minutes = "00"
+                    if int(custom_hours) < 23:
+                        custom_hours = int(custom_hours)+1
+                    else:
+                        custom_hours = "00"
+            if len(str(custom_hours)) <2:
+                custom_hours = "0" + str(custom_hours)
+            if len(str(custom_minutes)) <2:
+                custom_minutes = "0" + str(custom_minutes)
+            if len(str(custom_seconds)) <2:
+                custom_seconds = "0" + str(custom_seconds)
+            time.sleep(1)
+
 def display_clock():
     while True:
-        if convention%2 == 1:
-            print(f"{cursor_line_1}{clock[0]} : {clock[1]} : {clock[2]}{cursor_load}", end="", flush=True)
-
-        if convention%2 == 0:
-            print(f"{cursor_line_1}{clock[0]} : {clock[1]} : {clock[2]} {cycle[0]}{cursor_load}", end="", flush=True)
-
-        time.sleep(0.5)
+        print(f"{cursor_line_1}{clock[0]} : {clock[1]} : {clock[2]}{cursor_load}", end="", flush=True)
+        time.sleep(1)
         if stop == True:
-            time.sleep(1)
+            time.sleep(0.3)
             print(f"{cursor_heavycls}", end="")
             return
 
@@ -84,26 +103,30 @@ def display_terminal():
             break
         if commande == "automatique":
             automatic = True
+            threading.Thread(target=unset_warning).start()
         if commande == "manuel":
-            if custom_hours == "--":
-                threading.Thread(target=unset_warning).start()
             automatic = False
+            threading.Thread(target=unset_warning).start()
         if unidecode.unidecode(commande) == "regler":
+            automatic = False
             set_clock_running = True
             set_clock()
             set_clock_running = False
+            if threading.Thread(target=clock_ticking).is_alive() == False:
+                threading.Thread(target=clock_ticking).start()
+            threading.Thread(target=unset_warning).start()
         else: continue
 
 def unset_warning():
-    print(f"{cursor_line_3}Aucune heure n'a été définie :(", end="", flush=True)
-    time.sleep(5)
-    print(f"{cursor_save}{cursor_line_3}{cursor_load}", end="", flush=True)
+    if automatic == False and custom_hours == "--" and set_clock_running == False:
+        print(f"{cursor_line_3}Aucune heure n'a été définie :(", end="", flush=True)
+    else: print(f"{cursor_save}{cursor_line_3}{cursor_load}", end="", flush=True)
 
 def set_clock():
-    global custom_hours, custom_minutes, custom_secondes
-    custom_hours = set_values("hours")
-    custom_minutes = set_values("minutes")
-    custom_secondes = set_values("secondes")
+    global custom_hours, custom_minutes, custom_seconds
+    custom_hours = str(set_values("hours"))
+    custom_minutes = str(set_values("minutes"))
+    custom_seconds = str(set_values("secondes"))
 
 def set_values(unit):
     if unit == "hours": unit = 0
@@ -112,7 +135,7 @@ def set_values(unit):
     print(f"{cursor_line_5}Entrez {print_fr_unit[unit]}")
     while True:
         value = "__"
-        value = input(f"{cursor_line_4}Alarme : {custom_hours}H {custom_minutes}M {custom_secondes}S\033[{unit_cursor_back[unit]}D").strip("- ,.")
+        value = input(f"{cursor_line_4}Alarme : {custom_hours}H {custom_minutes}M {custom_seconds}S\033[{unit_cursor_back[unit]}D").strip("- ,.")
         try: test = int(value)
         except Exception: 
             print(f"{cursor_line_6}/!\ Entrez une valeur numérique sous la forme '00'", end="")
@@ -132,4 +155,5 @@ print(f"{cursor_heavycls}", end="")
 threading.Thread(target=define_clock).start()
 
 threading.Thread(target=display_terminal).start()
+threading.Thread(target=unset_warning).start()
 threading.Thread(target=display_clock).start()
