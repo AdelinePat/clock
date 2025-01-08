@@ -1,17 +1,22 @@
 # Import des librairies nécessaires
 import datetime, time, threading
 
+# Bouts de phrases à insérer par rapport à l'info donnée par datetime
 day = ('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi')
 month = (None, 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
 
+# Variables faussement boléennes, mode permet de désigner l'index 0 ou 1 en étant %2
 stop = 0
 mode = 1
+
+# Infos nécessaires pour l'input des unités H S M : bouts de phrases pour print, unit_b pour placer le curseur au bon espace, et le maximum
 unit = ["l'heure", "l'heure", "les minutes", "les secondes", "AM / PM"]
 unit_b = [11,11,7,3]
 unit_max = [12,23,60,60]
+# alarme est défini en liste pour uniformiser au lancement du programme : 0 = H12, 1 = H24, 2 = M, 3 = S, 4 = "AM"/"PM"
 alarm = ["__","__","__","__","__"]
 
-
+#codes ansi pour les prints \033[
 cursor_line_1 = "\033[s\033[H\033[2K"
 cursor_line_2 = "\033[s\033[H\033[1B\033[2K"
 cursor_line_3 = "\033[H\033[2B\033[2K"
@@ -37,6 +42,20 @@ def clock():
     datetime_now_clock = (datetime.datetime.now().strftime("%I"), datetime.datetime.now().strftime("%H"), datetime.datetime.now().strftime("%M"), datetime.datetime.now().strftime("%S"), datetime.datetime.now().strftime("%p"))
     return datetime_now_clock
 
+def display_clock():
+    while True:
+        if mode%2 == 0:
+            print(f"{cursor_line_1}{calendar()[0]} {calendar()[1]} {calendar()[2]}   \
+{clock()[0]} : {clock()[2]} : {clock()[3]} {clock()[4]}{cursor_load}", end="", flush=True)
+        if mode%2 == 1:
+            print(f"{cursor_line_1}{calendar()[0]} {calendar()[1]} {calendar()[2]}   \
+{clock()[1]} : {clock()[2]} : {clock()[3]}{cursor_load}", end="", flush=True)
+        time.sleep(0.5)
+        if stop == 1:
+            time.sleep(1)
+            print(f"{cursor_heavycls}", end="")
+            return
+
 def display_alarm():
     global alarm
     while True:
@@ -51,21 +70,6 @@ def display_alarm():
         else: print(f"{cursor_line_2}Aucune alarme définie.{cursor_load}", end="", flush=True)
         time.sleep(0.5)
         if stop == 1:
-            return
-
-
-def display_clock():
-    while True:
-        if mode%2 == 0:
-            print(f"{cursor_line_1}{calendar()[0]} {calendar()[1]} {calendar()[2]}   \
-{clock()[0]} : {clock()[2]} : {clock()[3]} {clock()[4]}{cursor_load}", end="", flush=True)
-        if mode%2 == 1:
-            print(f"{cursor_line_1}{calendar()[0]} {calendar()[1]} {calendar()[2]}   \
-{clock()[1]} : {clock()[2]} : {clock()[3]}{cursor_load}", end="", flush=True)
-        time.sleep(0.5)
-        if stop == 1:
-            time.sleep(1)
-            print(f"{cursor_heavycls}", end="")
             return
 
 def command_terminal():
@@ -83,8 +87,7 @@ def command_terminal():
         else: continue
 
 def set_alarm():
-    if input_unit_alarm(int(mode%2)) == 0:
-        return
+    input_unit_alarm(int(mode%2))
     input_unit_alarm(2)
     input_unit_alarm(3)
     if mode%2 == 0:
@@ -118,12 +121,6 @@ def input_unit_alarm(valeur):
     while True:
         alarm[valeur] = "__"
         alarm[valeur] = input(f"{cursor_line_4}Alarme : {alarm[int(mode%2)]}H {alarm[2]}M {alarm[3]}S\033[{unit_b[valeur]}D").strip("- ,.")
-        # if not alarm[0] and not alarm[1]:
-        #     choix = input(f"\033[2K\033[F\033[2KAnnuler l'alarm ? o/n \n").strip().lower()
-        #     if choix in ('o', 'oui'):
-        #         print(f"\033[F\033[2K", end="")
-        #         return 0
-        #     else: continue
         try: test = int(alarm[valeur])
         except Exception: 
             print(f"{cursor_line_6}/!\ Entrez une valeur numérique sous la forme '00'", end="")
@@ -136,11 +133,14 @@ def input_unit_alarm(valeur):
             continue
         elif len(str(alarm[valeur])) == 2:
             print(f"{cursor_line_4}{cursor_lightcls}", end="")
-            return 1
+            return
 
 
 print(f"{cursor_heavycls}", end="")
 threading.Thread(target=command_terminal).start()
+# prompt : heure directe ou heure personnalisée
+# format => input H M S dans des variables => 24h
 threading.Thread(target=display_clock).start()
+# calcul de 24h à am pm
 time.sleep(0.5)
 threading.Thread(target=display_alarm).start()
