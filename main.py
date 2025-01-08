@@ -134,19 +134,32 @@ def display_time(current_time, max_display, alarm, message=""):
         print("\r" + current_time_str + alarm_str + message + " ", end="")
 
 def display_alarm(clock, alarm, max_display):
-    if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
-        ring = "Ring ring! Ring ring!"
-        message = (f"{ring:>30}")
-        # Blinking message
-        #while clock[1] < alarm_time[1] + 1:
-            #if clock[2] % 2 == 0:
-                #return "Ring ring! Ring ring!"
-            #else:
-                #return ""   
-        return message
+    
+    if len(clock) == 4 and clock[3] != alarm[3]:
+        if clock[3] == "AM":
+            if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= (alarm[0]+12) * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= (alarm[0]+12) * 3600 + alarm[1] * 60 + alarm[2] + max_display:
+                ring = "Ring ring! Ring ring!"
+                message = (f"{ring:>30}")
+                return message
+            else:
+                message = ""
+                return message
+        else:
+            if alarm and (clock[0]+12) * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and (clock[0]+12) * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
+                ring = "Ring ring! Ring ring!"
+                message = (f"{ring:>30}")
+                return message
+            else:
+                message = ""
+                return message
     else:
-        message = ""
-        return message
+        if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
+            ring = "Ring ring! Ring ring!"
+            message = (f"{ring:>30}")
+            return message
+        else:
+            message = ""
+            return message
         
 def main():
     max_display = 10 #10 seconds
