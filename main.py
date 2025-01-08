@@ -128,6 +128,7 @@ def display_time(current_time, max_display, alarm, message=""):
 
     if alarm and current_time[0] * 3600 + current_time[1] * 60 + current_time[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
         cls()
+        print("\r" + current_time_str + alarm_str + message + " ", end="")
 
 def display_alarm(clock, alarm, max_display):
     if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
