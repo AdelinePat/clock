@@ -1,9 +1,5 @@
-import time, datetime, keyboard, os
-from timeclass import Time
-from timeclass import Alarm 
-
-def cls():
-     os.system('cls' if os.name=='nt' else 'clear')
+import time, datetime, keyboard
+from timeclass import Time, Alarm
 
 def set_time(format):
     min_hour = 0
@@ -35,7 +31,6 @@ def set_time(format):
             print("Please enter a number between 0 and 59!")
 
     if format == "12h":
-        # time = (hour, minute, second, half_day)
         if half_day == "AM":
             if hour == 12:
                 time = Time(0, minute,second, format)
@@ -47,7 +42,6 @@ def set_time(format):
             else:
                 time = Time(hour+12, minute, second, format)
     else:
-        # time = (hour, minute, second)
         time = Time(hour, minute, second) 
 
     return time
@@ -70,29 +64,6 @@ def choose_alarm(format):
         alarm_clock = Alarm(0, 0, 0, "24h", False)
     return alarm_clock
 
-
-# def display_alarm(clock, alarm, max_display):
-#      if alarm and clock.in_seconds() >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
-#         ring = "Ring ring! Ring ring!"
-#         message = (f"{ring:>30}")
-
-    # if alarm and clock[0] * 3600 + clock[1] * 60 + clock[2] >= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] and clock[0] * 3600 + clock[1] * 60 + clock[2] <= alarm[0] * 3600 + alarm[1] * 60 + alarm[2] + max_display:
-    #     ring = "Ring ring! Ring ring!"
-    #     message = (f"{ring:>30}")
-
-
-        # Blinking message
-        #while clock[1] < alarm_time[1] + 1:
-            #if clock[2] % 2 == 0:
-                #return "Ring ring! Ring ring!"
-            #else:
-                #return ""   
-        # return message
-    # else:
-    #     message = ""
-    #     return message
-        
-
 def display_time(clock, alarm):
     if alarm:
         print("\r" + f"{clock}" + f"{alarm}", end="")
@@ -103,42 +74,34 @@ def display_alarm(clock_seconds, alarm_seconds):
     if clock_seconds >= alarm_seconds and clock_seconds <= alarm_seconds + Alarm.max_display:
         ring = "Ring ring! Ring ring!"
         message = (f"{ring:>30}")
+        if clock_seconds == alarm_seconds + Alarm.max_display:
+            message = "\033[s\033[H\033[2K\033[u"
         return message
     else:
         return ""
     
 def main():
     format = choose_format() # value : "12h" / "24h"
-    # alarm = choose_alarm(format) # value: (h,m,s)
     clock = set_time(format) # value: (h,m,s)
-    alarm = choose_alarm(format) #  retourne alarm_clock = Alarm(alarm.hour, alarm.minute, alarm.second, True)
-    clock_seconds = clock.in_seconds()
-    alarm_seconds = alarm.in_seconds()
-    
+    alarm = choose_alarm(format) #  return alarm_clock = Alarm(alarm.hour, alarm.minute, alarm.second, True)
    
-    cls()
+    print(f"\033[H\033[2J", end="") # clearing terminal
+
     while True :
         
         time.sleep(1.0)
-        #clock = datetime.datetime.now()
         clock.increment_time()
 
-        # print(f"ceci est un test d'alarme :" + alarm.display_alarm(clock))
-        
         if alarm.enabled:
+            clock_seconds = clock.in_seconds()
+            alarm_seconds = alarm.in_seconds()
+            # print("\033[s\033[H\033[2J\033[u", end="")
             message = display_alarm(clock_seconds, alarm_seconds)
-            print("\r" + f"{clock}" + f"{alarm}" + f"{message}", end="")
-             
+            print("\r" + f"{clock}" + f"{alarm}" + f"{message}", end="") 
             
         else:
             print("\r" + f"{clock}", end="")
-        
-        #current_time = (clock.strftime('%H'), clock.strftime('%M'), clock.strftime('%S'))
-        # message = display_alarm(clock, alarm, max_display)
-        # display_time(clock, max_display, alarm, message)
-        
-        
-        #TODO need to not actualize clock variable when paused
+
         try:
             if keyboard.is_pressed('a'):
                 keyboard.wait('b')
