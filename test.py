@@ -1,9 +1,7 @@
-import time, datetime, keyboard
-from timeclass import Time, Alarm
+import time, keyboard
+from Timeclass import Time, Alarm
 
 def set_time(format):
-    min_hour = 0
-    max_hour = 23
     hour = -1
     minute = -1
     second = -1
@@ -12,13 +10,13 @@ def set_time(format):
         half_day = input("AM or PM? ").upper().strip()
         if half_day != "AM" and half_day != "PM":
             return set_time(format)      
-        min_hour = 1
-        max_hour = 12
+        Time.min_hour = 1
+        Time.max_hour = 12
     
-    while hour < min_hour or hour > max_hour:
-        hour = int(input(f"Enter hours (0-{max_hour}): "))
-        if hour < 0 or hour > max_hour:
-            print(f"Please enter a number between 0 and {max_hour}!")
+    while hour < Time.min_hour or hour > Time.max_hour:
+        hour = int(input(f"Enter hours (0-{Time.max_hour}): "))
+        if hour < 0 or hour > Time.max_hour:
+            print(f"Please enter a number between 0 and {Time.max_hour}!")
 
     while minute < 0 or minute > 59:
         minute = int(input("Enter minutes (0-59): "))
@@ -64,12 +62,6 @@ def choose_alarm(format):
         alarm_clock = Alarm(0, 0, 0, "24h", False)
     return alarm_clock
 
-def display_time(clock, alarm):
-    if alarm:
-        print("\r" + f"{clock}" + f"{alarm}", end="")
-    else:
-        print("\r" + f"{clock}", end="")
-
 def display_alarm(clock_seconds, alarm_seconds):
     if clock_seconds >= alarm_seconds and clock_seconds <= alarm_seconds + Alarm.max_display:
         ring = "Ring ring! Ring ring!"
@@ -95,10 +87,8 @@ def main():
         if alarm.enabled:
             clock_seconds = clock.in_seconds()
             alarm_seconds = alarm.in_seconds()
-            # print("\033[s\033[H\033[2J\033[u", end="")
             message = display_alarm(clock_seconds, alarm_seconds)
-            print("\r" + f"{clock}" + f"{alarm}" + f"{message}", end="") 
-            
+            print("\r" + f"{clock}" + f"{alarm}" + f"{message}", end="")       
         else:
             print("\r" + f"{clock}", end="")
 
