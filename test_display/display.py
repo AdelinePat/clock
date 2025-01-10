@@ -1,5 +1,6 @@
 # Import des librairies nécessaires
 import datetime, time, threading
+
 # Bouts de phrases à insérer par rapport à l'info donnée par datetime
 day = ('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi')
 month = (None, 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
