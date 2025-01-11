@@ -3,6 +3,13 @@ class Time:
     max_hour = 23
     max_second_minute = 59
 
+    """
+    horloge[0]= hour
+    horloge[1]=minute
+    horloge[2]= second
+    horloge[3]= format
+    """
+
     def __init__(self, hour, minute, second, format="24h"):
        self.horloge = (hour, minute, second, format)
 
@@ -12,22 +19,25 @@ class Time:
         #epoch 
 
     def increment_time(self):
-        if self.horloge[2] < Time.max_second_minute: # horloge [2] = second
+        if self.horloge[2] < Time.max_second_minute: 
             
             self.horloge = (self.horloge[0], self.horloge[1], self.horloge[2]+1, self.horloge[3])
         else:
-            self.horloge[2] = 0
-            if self.horloge[1] < Time.max_second_minute:#horloge[1]=minute
-                self.horloge[1] += 1
+            # self.horloge[2] = 0
+            if self.horloge[1] < Time.max_second_minute:
+                # self.horloge[1] += 1
+                self.horloge = (self.horloge[0], self.horloge[1]+1, 0, self.horloge[3])
             else:
-                self.horloge[1] = 0 
-                if self.horloge[0] < Time.max_hour: #horloge [0] = hour
-                    self.horloge[0]+= 1
+                # self.horloge[1] = 0 
+                if self.horloge[0] < Time.max_hour: 
+                    # self.horloge[0]+= 1
+                    self.horloge = (self.horloge[0]+1, 0, 0, self.horloge[3])
                 else:
-                    self.horloge[0] = 0
+                    # self.horloge[0] = 0
+                    self.horloge = (0, 0, 0, self.horloge[3])
 
     def __str__(self):
-        if self.horloge [3] == "24h": #horlorge [3]= format
+        if self.horloge [3] == "24h": 
             return f"{self.horloge[0] :02d} : {self.horloge[1]:02d} : {self.horloge[2]:02d}"
         else:
             if self.horloge [0] < 12:
