@@ -36,6 +36,9 @@ def clock_24h(clock_time):
 
 # Line 3 - Message
 
+def message_first_time():
+    print(f"{dic_cursor["delete_line_3-message"]}Bienvenue dans Horloge.", end="") #ZA WARUDO!!!
+
 def message_clock_valid():
     print(f"{dic_cursor["delete_line_3-message"]}Horloge changé avec succes!{dic_cursor["cursor_position_load"]}", end="")
 
@@ -54,29 +57,29 @@ def message_byebye():
 
 # Line 4 - Commands
 def input_command():
-    input(f"{dic_cursor["delete_line_4-command"]}{dic_cursor["delete_all_after_position"]}Commande : ")
+    return input(f"{dic_cursor["delete_line_4-command"]}{dic_cursor["delete_all_after_position"]}Commande : ")
 
 # Line 5 - Input
 def input_clock_config():
-    input(f"{dic_cursor["delete_line_5-input"]}{dic_cursor["delete_all_after_position"]}Configurer l'heure en: (M)anuel, (A)uto? ").lower()
+    return input(f"{dic_cursor["delete_line_5-input"]}{dic_cursor["delete_all_after_position"]}Configurer l'heure en: (M)anuel, (A)uto? ").lower()
 
 def input_user_clock():
-    input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer l'heure au format hh:mm:ss : ________{dic_cursor["cursor_move_left_8"]}").strip(" :.,/")
+    return input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer l'heure au format hh:mm:ss : ________{dic_cursor["cursor_move_left_8"]}").strip(":")
 
 def input_user_format(user_clock):
-    input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer AM ou PM : {user_clock[:2]}:{user_clock[2:4]}:{user_clock[4:]} __{dic_cursor["cursor_move_left_2"]}").upper()
+    return input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer AM ou PM : {user_clock[:2]}:{user_clock[2:4]}:{user_clock[4:]} __{dic_cursor["cursor_move_left_2"]}").upper()
 # Line 6 - Errors
 def error_invalid_time():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\Entrer une heure valide! (00-23):(00-59):(00-59)")
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Entrer une heure valide! (00-23):(00-59):(00-59)")
 
 def error_NaN():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\Enter uniquement des chiffres!")
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter uniquement des chiffres!")
 
 def error_number_length():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\Enter exactement 6 chiffres au total!")
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter exactement 6 chiffres au total!")
 
 def error_format():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\Enter AM ou PM!")
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter AM ou PM!")
 
 
 

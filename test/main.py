@@ -52,7 +52,7 @@ def main():
 
     display.all_clear()
 
-    #display.message_first_time()
+    display.message_first_time()
 
     clock_time.change_clock()
 
@@ -60,6 +60,6 @@ def main():
     threading.Thread(target=command_terminal, args=(event, clock_time)).start()
     event.set()
 
-    threading.Thread(target=clock_time.display_clock, args=(event)).start()   
+    threading.Thread(target=clock_time.display_clock, args=(event,)).start()   
 
 main()

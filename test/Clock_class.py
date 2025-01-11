@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import time, display
 
 class Clock:
@@ -10,10 +10,10 @@ class Clock:
 
     def clock_ticking(self, clock_datetime):
         clock_datetime = clock_datetime + datetime.timedelta(seconds=1)
-        self.clock = (int(clock_datetime.strftime('%H')), int(clock_datetime.strftime('%M')), int(clock_datetime.strftime('%S')))
+        self.clock = (clock_datetime.strftime('%H'), clock_datetime.strftime('%M'), clock_datetime.strftime('%S'))
         
         # %I = hour in 12h format
-        self.ampm_hour = int(clock_datetime.strftime('%I'))
+        self.ampm_hour = clock_datetime.strftime('%I')
         # %p = AM/PM
         self.format = clock_datetime.strftime('%p')
 
@@ -21,11 +21,11 @@ class Clock:
         while True:
             event.wait()
             if self.mode == False:
-                clock_datetime = datetime.datetime(1970, 1, 1, self.clock[0], self.clock[1], self.clock[2])
+                clock_datetime = datetime.datetime(1970, 1, 1, int(self.clock[0]), int(self.clock[1]), int(self.clock[2]))
                 # TODO display the tuple instead; change datetime only in change_clock
                 display.clock_24h(self)
             else:
-                clock_datetime = datetime.datetime(1970, 1, 1, self.ampm_hour, self.clock[1], self.clock[2])
+                clock_datetime = datetime.datetime(1970, 1, 1, int(self.ampm_hour), int(self.clock[1]), int(self.clock[2]))
                 display.clock_12h(self)
                 
             self.clock_ticking(clock_datetime)
@@ -37,9 +37,10 @@ class Clock:
             clock_config = display.input_clock_config()
 
             if clock_config == "automatique" or clock_config == "auto" or clock_config == "a":
-                current_time = datetime.now()
-                return (int(current_time("%H")), int(current_time("%M")), int(current_time("%S")))
-
+                current_time = datetime.datetime.now()
+                self.clock = (current_time.strftime("%H"), current_time.strftime("%M"), current_time.strftime("%S"))
+                return
+            
             elif clock_config == "manuel" or clock_config == "m":
                 while True:
                     user_clock = display.input_user_clock()
@@ -78,7 +79,7 @@ class Clock:
 
                     display.message_clock_valid()
                         
-                    self.clock = (int(user_clock[0:2]), int(user_clock[2:4]), int(user_clock[4:]))
+                    self.clock = (user_clock[0:2], user_clock[2:4], user_clock[4:])
                     return    
             
             else:
