@@ -1,147 +1,108 @@
-# Import des librairies nécessaires
-import datetime, time, threading
-# Bouts de phrases à insérer par rapport à l'info donnée par datetime
-day = ('Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi')
-month = (None, 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre')
+#TODO variable for each line (l) + the "clear line" separated + the "save cursor"
 
-# Variables faussement boléennes, mode permet de désigner l'index 0 ou 1 en étant %2
-stop = 0
-mode = 1
+#TODO display available commands
 
-# Infos nécessaires pour l'input des unités H S M : bouts de phrases pour print, unit_b pour placer le curseur au bon espace, et le maximum
-unit = ["l'heure", "l'heure", "les minutes", "les secondes", "AM / PM"]
-unit_b = [11,11,7,3]
-unit_max = [12,23,60,60]
-# alarme est défini en liste pour uniformiser au lancement du programme : 0 = H12, 1 = H24, 2 = M, 3 = S, 4 = "AM"/"PM"
-alarm = ["__","__","__","__","__"]
+#TODO center the display
 
-#codes ansi pour les prints \033[
-cursor_line_1 = "\033[s\033[H\033[2K"
-cursor_line_2 = "\033[s\033[H\033[1B\033[2K"
-cursor_line_3 = "\033[H\033[2B\033[2K"
-cursor_line_4 = "\033[H\033[3B\033[2K"
-cursor_line_5 = "\033[H\033[4B\033[2K"
-cursor_line_6 = "\033[H\033[5B\033[2K"
+# ANSI codes
+dic_cursor = {
+    "delete_line_1-clock": "\033[s\033[H\033[2K",
+    "delete_line_2-alarm": "\033[s\033[H\033[1B\033[2K",
+    "delete_line_3-message": "\033[H\033[2B\033[2K",
+    "delete_line_4-command": "\033[H\033[3B\033[2K",
+    "delete_line_5-input": "\033[H\033[4B\033[2K",
+    "delete_line_6-error": "\033[H\033[5B\033[2K",
 
-cursor_load = "\033[u"
-cursor_linecls = "\033[2K"
-cursor_lightcls = "\033[0J"
-cursor_heavycls = "\033[H\033[0J"
+    "cursor_position_load": "\033[u",
 
-cursor_bold_start = "\033[1m"
-cursor_bold_end = "\033[22m"
-cursor_style_finish = "\033[0m"
+    "cursor_after_alarm": "\033[s\033[H\033[1B\033[8C",
+    "delete_after_alarm": "\033[s\033[H\033[1B\033[8C\033[0K",
 
-# Définition des fonctions clés
-def calendar():
-    calendar = (day[int(datetime.datetime.now().strftime("%w"))], datetime.datetime.now().strftime("%d"), month[int(datetime.datetime.now().strftime("%m"))])
-    return calendar
+    "cursor_move_left_2": "\033[2D",
+    "cursor_move_left_8": "\033[8D",
 
-def clock():
-    # add incrementation here
-    datetime_now_clock = (datetime.datetime.now().strftime("%I"), datetime.datetime.now().strftime("%H"), datetime.datetime.now().strftime("%M"), datetime.datetime.now().strftime("%S"), datetime.datetime.now().strftime("%p"))
-    return datetime_now_clock
+    "delete_all_after_position": "\033[0J",
+    "delete_all": "\033[H\033[0J"
+}
 
-def display_clock(): #display_clock(clock)
-    while True:
-        if mode%2 == 0:
-#clock() = clock => variable manually incremented 
-            print(f"{cursor_line_1}{calendar()[0]} {calendar()[1]} {calendar()[2]}   \
-{clock()[0]} : {clock()[2]} : {clock()[3]} {clock()[4]}{cursor_load}", end="", flush=True)
-        if mode%2 == 1:
-            print(f"{cursor_line_1}{calendar()[0]} {calendar()[1]} {calendar()[2]}   \
-{clock()[1]} : {clock()[2]} : {clock()[3]}{cursor_load}", end="", flush=True)
-        time.sleep(0.5)
-        if stop == 1:
-            time.sleep(1)
-            print(f"{cursor_heavycls}", end="")
-            return
+# Special actions
+def all_clear():
+    print(dic_cursor["delete_all"], end="", flush=True)
 
-def display_alarm():
-    global alarm
-    while True:
-        if alarm[0] != "__" and mode%2==1:
-            print(f"{cursor_line_2}! Alarme définie pour {alarm[1]}:{alarm[2]}:{alarm[3]} !{cursor_load}", end="", flush=True)
-        elif alarm[0] != "__" and mode%2==0:
-            print(f"{cursor_line_2}! Alarme définie pour {alarm[0]}:{alarm[2]}:{alarm[3]} {alarm[4]} !{cursor_load}", end="", flush=True)
-        elif alarm[0] != "__" and clock()[int(mode%2)] == alarm[int(mode%2)] and clock()[2] == alarm[2] and clock()[3] == alarm[3]:
-                print(f"{cursor_line_2}RINGGGGG{cursor_load}", end="", flush=True)
-                time.sleep(5)
-                alarm = ["__","__","__","__","__"]
-        else: print(f"{cursor_line_2}Aucune alarme définie.{cursor_load}", end="", flush=True)
-        time.sleep(0.5)
-        if stop == 1:
-            return
+# Line 1 - Clock
+def clock_12h(clock_time):
+    print(f"{dic_cursor["delete_line_1-clock"]}{clock_time.ampm_hour}:{clock_time.clock[1]}:{clock_time.clock[2]} {clock_time.format}{dic_cursor["cursor_position_load"]}", end="", flush=True)
 
-def command_terminal():
-    while True:
-        global mode, stop
-        commande = input(f"{cursor_line_4}{cursor_lightcls}Commande : ")
-        if commande == "mode":
-            mode +=1
-            continue
-        if commande == "alarme":
-            set_alarm()
-        if commande == "stop":
-            stop +=1
-            break
-        else: continue
+def clock_24h(clock_time):
+    print(f"{dic_cursor["delete_line_1-clock"]}{clock_time.clock[0]}:{clock_time.clock[1]}:{clock_time.clock[2]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
 
-def set_alarm():
-    input_unit_alarm(int(mode%2))
-    input_unit_alarm(2)
-    input_unit_alarm(3)
-    if mode%2 == 0:
-        print(f"{cursor_line_5}Entrez {unit[4]}", end="")
-        while True:
-            alarm[4] = input(f"{cursor_line_4}Alarme : {alarm[0]}H {alarm[2]}M {alarm[3]}S __\033[2D").strip(" ").upper()
-            if alarm[4] not in ("AM", "PM"):
-                continue
-            else: break
-        if alarm[4] == "PM" and str(alarm[0]) != "12":
-            alarm[1] = str(int(alarm[0])+12)
-        elif alarm[4] == "AM" and str(alarm[0]) == "12":
-            alarm[1] = "00"
-        else: alarm[1] = alarm[0]
-    if mode%2 == 1:
-        if alarm[1] == "00": alarm[0] = "12"; alarm[4] = "AM"
-        elif 12 < int(alarm[1]) < 22:
-            alarm[0] = "0"+str(int(alarm[1])-12)
-            alarm[4] = "PM"
-        elif 21 < int(alarm[1]):
-            alarm[0] = int(alarm[1])-12
-            alarm[4] = "PM"
-        else: 
-            alarm[0] = alarm[1]
-            alarm[4] = "AM"
-    print(f"{cursor_line_4}{cursor_lightcls}", end="")
+# Line 2 - Alarm
+def alarm_12h(alarm_time):
+    print(f"{dic_cursor["delete_line_2-alarm"]}{alarm_time.ampm_hour}:{alarm_time.alarm[1]}:{alarm_time.alarm[2]} {alarm_time.format}{dic_cursor["cursor_position_load"]}", end="", flush=True)
 
-def input_unit_alarm(valeur):
-    global alarm, unit
-    print(f"{cursor_line_5}Entrez {unit[valeur]}")
-    while True:
-        alarm[valeur] = "__"
-        alarm[valeur] = input(f"{cursor_line_4}Alarme : {alarm[int(mode%2)]}H {alarm[2]}M {alarm[3]}S\033[{unit_b[valeur]}D").strip("- ,.")
-        try: test = int(alarm[valeur])
-        except Exception: 
-            print(f"{cursor_line_6}/!\ Entrez une valeur numérique sous la forme '00'", end="")
-            continue
-        if 1 == len(str(alarm[valeur])) or len(str(alarm[valeur])) >=3 :
-            print(f"{cursor_line_6}/!\ Entrez une valeur constituée de 2 chiffres '00'", end="")
-            continue
-        elif test >= unit_max[valeur]+1:
-            print(f"{cursor_line_6}/!\ Entrez une valeur correcte à l'unité (entre 00 et {unit_max[valeur]})", end="")
-            continue
-        elif len(str(alarm[valeur])) == 2:
-            print(f"{cursor_line_4}{cursor_lightcls}", end="")
-            return
+def alarm_24h(alarm_time):
+    print(f"{dic_cursor["delete_line_2-alarm"]}{alarm_time.alarm[0]}:{alarm_time.alarm[1]}:{alarm_time.alarm[2]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
+
+def alarm_on():
+    print(f"{dic_cursor["cursor_after_alarm"]} Ring Ring!! Ring Ring!!{dic_cursor["cursor_position_load"]}", end="", flush=True)
+
+def alarm_off():
+    print(f"{dic_cursor["delete_after_alarm"]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
+
+# Line 3 - Message
+
+def message_first_time():
+    print(f"{dic_cursor["delete_line_3-message"]}Bienvenue dans Horloge.", end="", flush=True) #ZA WARUDO!!!
+
+def message_alarm_valid():
+    print(f"{dic_cursor["delete_line_3-message"]}Alarme changé avec succes!{dic_cursor["cursor_position_load"]}", end="", flush=True)
+
+def message_clock_valid():
+    print(f"{dic_cursor["delete_line_3-message"]}Horloge changé avec succes!{dic_cursor["cursor_position_load"]}", end="", flush=True)
+
+def message_stop():
+    print(f"{dic_cursor["delete_line_3-message"]}Horloge stoppé.", end="", flush=True) #ZA WARUDO!!!
+
+def message_start():
+    print(f"{dic_cursor["delete_line_3-message"]}Horloge redémarré.", end="", flush=True) #TOKI WO UGOKIDASU.
+
+def message_help():
+    print(f"{dic_cursor["delete_line_3-message"]}\"horloge\"\"alarme\"\"mode\"\"stop\"\"demarrer\"\"commandes\"\"quitter\"", end="", flush=True) #TOKI WO UGOKIDASU.
+
+def message_byebye():
+    print(f"{dic_cursor["delete_line_3-message"]}Le programme va quitter...", end="", flush=True) #My final message.
 
 
-print(f"{cursor_heavycls}", end="")
-threading.Thread(target=command_terminal).start()
-# prompt : heure directe ou heure personnalisée
-# format => input H M S dans des variables => 24h
-threading.Thread(target=display_clock).start()
-# calcul de 24h à am pm
-time.sleep(0.5)
-threading.Thread(target=display_alarm).start()
+# Line 4 - Commands
+def input_command():
+    return input(f"{dic_cursor["delete_line_4-command"]}{dic_cursor["delete_all_after_position"]}Commande : ").lower()
+
+# Line 5 - Input
+def input_clock_config():
+    return input(f"{dic_cursor["delete_line_5-input"]}{dic_cursor["delete_all_after_position"]}Configurer l'heure en: (M)anuel, (A)uto? ").lower()
+
+def input_user_clock():
+    return input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer l'heure au format hh:mm:ss : ________{dic_cursor["cursor_move_left_8"]}").replace(":", "")
+
+def input_user_format(user_time):
+    return input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer AM ou PM : {user_time[:2]}:{user_time[2:4]}:{user_time[4:]} __{dic_cursor["cursor_move_left_2"]}").upper()
+
+def input_user_alarm():
+    return input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer l'alarme au format hh:mm:ss : ________{dic_cursor["cursor_move_left_8"]}").replace(":", "")
+
+# Line 6 - Errors
+def error_invalid_time():
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Entrer une heure valide! (00-23):(00-59):(00-59)", end="")
+
+def error_NaN():
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter uniquement des chiffres!", end="")
+
+def error_number_length():
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter exactement 6 chiffres au total!", end="")
+
+def error_format():
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter AM ou PM!", end="")
+
+
+
+

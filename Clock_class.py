@@ -20,12 +20,10 @@ class Clock:
     def display_clock(self, event):
         while True:
             event.wait()
+            clock_datetime = datetime.datetime(1970, 1, 1, int(self.clock[0]), int(self.clock[1]), int(self.clock[2]))
             if self.mode == False:
-                clock_datetime = datetime.datetime(1970, 1, 1, int(self.clock[0]), int(self.clock[1]), int(self.clock[2]))
-                # TODO display the tuple instead; change datetime only in change_clock
                 display.clock_24h(self)
             else:
-                clock_datetime = datetime.datetime(1970, 1, 1, int(self.ampm_hour), int(self.clock[1]), int(self.clock[2]))
                 display.clock_12h(self)
                 
             self.clock_ticking(clock_datetime)
@@ -54,7 +52,7 @@ class Clock:
 
                     #Verify if it's a valid hour with datetime error directly
                     try:
-                        test = datetime.datetime(1970, 1, 1, user_clock[:2], user_clock[2:4], user_clock[4:])
+                        test = datetime.datetime(1970, 1, 1, int(user_clock[:2]), int(user_clock[2:4]), int(user_clock[4:]))
                     except Exception:
                         display.error_invalid_time()
                         continue
@@ -67,19 +65,19 @@ class Clock:
                     if self.mode == True:
                         user_format = display.input_user_format(user_clock)
                         
-                        if self.format != "AM" and "PM":
+                        if user_format != "AM" and user_format != "PM":
                             display.error_format()
                             continue
 
                         self.format = user_format
                         if user_format == "PM" and user_clock[:2] != "12":
-                            user_clock[:2] = int(user_clock[:2])+12
+                            user_clock = str(int(user_clock[:2])+12) + user_clock[2:]
                         elif user_format == "AM" and user_clock[:2] == "12":
                             user_clock[:2] = "00"
 
                     display.message_clock_valid()
-                        
-                    self.clock = (user_clock[0:2], user_clock[2:4], user_clock[4:])
+                    
+                    self.clock = (user_clock[:2], user_clock[2:4], user_clock[4:])
                     return    
             
             else:
