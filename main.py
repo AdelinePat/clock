@@ -5,7 +5,7 @@ from Alarm_class import Alarm
 
 def command_terminal(event, clock_time, alarm_time):
     while True:
-        display.message_help()
+        
         command = display.input_command()
         match command:
             case "mode":
@@ -37,12 +37,13 @@ def command_terminal(event, clock_time, alarm_time):
                 display.message_start()
                 continue
             case "commandes" | "c":
-                display.message_help()
+                display.commands()
+                # display.message_help()
                 continue
-            case "quitter" | "q":
-                display.message_byebye()
-                time.sleep(3)
-                break
+            # case "quitter" | "q":
+            #     display.message_byebye()
+            #     time.sleep(3)
+            #     break
             case _:
                 continue
 
@@ -57,9 +58,10 @@ def main():
 
     clock_time.change_clock()
 
+    display.message_help()
+
     threading.Thread(target=command_terminal, args=(event, clock_time, alarm_time)).start()
     event.set()
-
     threading.Thread(target=clock_time.display_clock, args=(event,)).start()   
 
 main()
