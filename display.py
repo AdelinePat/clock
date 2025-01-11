@@ -67,7 +67,7 @@ def message_start():
     print(f"{dic_cursor["delete_line_3-message"]}Horloge redémarré.", end="", flush=True) #TOKI WO UGOKIDASU.
 
 def message_help():
-    print(f"{dic_cursor["delete_line_3-message"]}\"horloge\"\"alarme\"\"mode\"\"stop\"\"demarrer\"\"commandes\"\"quitter\"", end="", flush=True) #TOKI WO UGOKIDASU.
+    print(f"{dic_cursor["delete_line_3-message"]}Taper (C)ommades pour la liste de commande.", end="", flush=True) #TOKI WO UGOKIDASU.
 
 def message_byebye():
     print(f"{dic_cursor["delete_line_3-message"]}Le programme va quitter...", end="", flush=True) #My final message.
@@ -95,13 +95,17 @@ def error_invalid_time():
     print(f"{dic_cursor["delete_line_6-error"]}/!\\Entrer une heure valide! (00-23):(00-59):(00-59)", end="")
 
 def error_NaN():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter uniquement des chiffres!", end="")
+    print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter uniquement des chiffres ou des \":\"!", end="")
 
 def error_number_length():
     print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter exactement 6 chiffres au total!", end="")
 
 def error_format():
     print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter AM ou PM!", end="")
+
+def commands():
+    print(f"{dic_cursor["delete_line_6-error"]}(H)orloge pour modifier le temps ; (A)larme pour configurer une alarme ; (M)ode pour changer entre l'affichage 12h et 24h ; (S)top pour arreter l'horloge et (D)émarrer pour la reprendre ; (C)ommandes pour réafficher cette liste", end="")
+    
 
 
 
