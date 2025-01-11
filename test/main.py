@@ -1,10 +1,11 @@
-import time, threading
-import alarm, display
-from Clockclass import Clock
-
+import threading, time
+import display
+from Clock_class import Clock
+from Alarm_class import Alarm
 
 def command_terminal(event, clock_time):
     while True:
+        display.message_help()
         command = display.input_command()
         match command:
             case "mode":
@@ -16,19 +17,32 @@ def command_terminal(event, clock_time):
                 #    clock_time.clock = (clock_time.clock[0]-12, clock_time.clock[1], clock_time.clock[2])
                 #    clock_time.format = "AM"
                 continue
-            case "clock":
+            case "horloge":
                 event.clear()
                 clock_time.clock = clock_time.change_clock()
                 event.set()
                 continue
-            case "alarm":
-                pass
+            case "alarme":
+                if not alarm_time:
+                    alarm_time = Alarm((0,0,0),0,"", clock_time.mode)
+                    threading.Thread(target=alarm_time.display_alarm).start()
+                alarm_time.alarm = alarm_time.change_alarm()
+                continue
             case "stop":
                 event.clear()
                 display.message_stop()
-            case "start":
+                continue
+            case "demarrer":
                 event.set()
                 display.message_start()
+                continue
+            case "aide":
+                display.message_help()
+                continue
+            case "quitter":
+                display.message_byebye()
+                time.sleep(3)
+                break
             case _:
                 continue
 
@@ -46,8 +60,6 @@ def main():
     threading.Thread(target=command_terminal, args=(event, clock_time)).start()
     event.set()
 
-    threading.Thread(target=clock_time.display_clock, args=(event)).start()
-    #if alarm
-    #   threading.Thread(target=alarm.display_alarm).start()
+    threading.Thread(target=clock_time.display_clock, args=(event)).start()   
 
 main()

@@ -6,7 +6,7 @@ class Clock:
         self.clock = clock
         self.ampm_hour = ampm_hour
         self.format = format
-        self.mode = False
+        self.mode = mode
 
     def clock_ticking(self, clock_datetime):
         clock_datetime = clock_datetime + datetime.timedelta(seconds=1)
@@ -17,7 +17,7 @@ class Clock:
         # %p = AM/PM
         self.format = clock_datetime.strftime('%p')
 
-    def display_clock(self, event, dic_cursor):
+    def display_clock(self, event):
         while True:
             event.wait()
             if self.mode == False:
@@ -65,13 +65,21 @@ class Clock:
 
                     if self.mode == True:
                         user_format = display.input_user_format(user_clock)
-
-                        if user_format != "AM" and "PM":
+                        
+                        if self.format != "AM" and "PM":
                             display.error_format()
                             continue
 
+                        self.format = user_format
+                        if user_format == "PM" and user_clock[:2] != "12":
+                            user_clock[:2] = int(user_clock[:2])+12
+                        elif user_format == "AM" and user_clock[:2] == "12":
+                            user_clock[:2] = "00"
+
                     display.message_clock_valid()
-                    return (int(user_clock[0:2]), int(user_clock[2:4]), int(user_clock[4:]))        
+                        
+                    self.clock = (int(user_clock[0:2]), int(user_clock[2:4]), int(user_clock[4:]))
+                    return    
             
             else:
                 continue

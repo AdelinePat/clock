@@ -36,14 +36,21 @@ def clock_24h(clock_time):
 
 # Line 3 - Message
 
-def message_clock_valid(dic_cursor):
+def message_clock_valid():
     print(f"{dic_cursor["delete_line_3-message"]}Horloge changé avec succes!{dic_cursor["cursor_position_load"]}", end="")
 
-def message_stop(dic_cursor):
+def message_stop():
     print(f"{dic_cursor["delete_line_3-message"]}Horloge stoppé.", end="") #ZA WARUDO!!!
 
-def message_start(dic_cursor):
+def message_start():
     print(f"{dic_cursor["delete_line_3-message"]}Horloge redémarré.", end="") #TOKI WO UGOKIDASU.
+
+def message_help():
+    print(f"{dic_cursor["delete_line_3-message"]}\"horloge\"\"alarme\"\"stop\"\"demarrer\"\"aide\"\"quitter\"", end="") #TOKI WO UGOKIDASU.
+
+def message_byebye():
+    print(f"{dic_cursor["delete_line_3-message"]}Le programme va quitter...", end="") #My final message.
+
 
 # Line 4 - Commands
 def input_command():
@@ -57,13 +64,19 @@ def input_user_clock():
     input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer l'heure au format hh:mm:ss : ________{dic_cursor["cursor_move_left_8"]}").strip(" :.,/")
 
 def input_user_format(user_clock):
-    input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer AM ou PM : {user_clock[:2]}:{user_clock[2:4]}:{user_clock[4:]} __{dic_cursor["cursor_move_left_2"]}")
+    input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer AM ou PM : {user_clock[:2]}:{user_clock[2:4]}:{user_clock[4:]} __{dic_cursor["cursor_move_left_2"]}").upper()
 # Line 6 - Errors
 def error_invalid_time():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\Entrer une heure valide!")
+    print(f"{dic_cursor["delete_line_6-error"]}/!\Entrer une heure valide! (00-23):(00-59):(00-59)")
 
 def error_NaN():
     print(f"{dic_cursor["delete_line_6-error"]}/!\Enter uniquement des chiffres!")
+
+def error_number_length():
+    print(f"{dic_cursor["delete_line_6-error"]}/!\Enter exactement 6 chiffres au total!")
+
+def error_format():
+    print(f"{dic_cursor["delete_line_6-error"]}/!\Enter AM ou PM!")
 
 
 
