@@ -8,7 +8,7 @@ def command_terminal(event, clock_time, alarm_time):
         
         command = display.input_command()
         match command:
-            case "mode":
+            case "mode" | "m":
                 clock_time.mode = not clock_time.mode
                 # if clock_time.format == "AM":
                 #    clock_time.clock = (clock_time.clock[0]+12, clock_time.clock[1], clock_time.clock[2])
