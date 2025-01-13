@@ -20,7 +20,11 @@ class Clock:
     def display_clock(self, event):
         while True:
             event.wait()
-            clock_datetime = datetime.datetime(1970, 1, 1, int(self.clock[0]), int(self.clock[1]), int(self.clock[2]))
+            try:
+                clock_datetime = datetime.datetime(1970, 1, 1, int(self.clock[0]), int(self.clock[1]), int(self.clock[2]))
+            except Exception:
+                display.error_invalid_time()
+
             if self.mode == False:
                 display.clock_24h(self)
             else:
@@ -67,6 +71,10 @@ class Clock:
                         
                         if user_format != "AM" and user_format != "PM":
                             display.error_format()
+                            continue
+
+                        if int(user_clock[:2]) > 12:
+                            display.error_invalid_time
                             continue
 
                         self.format = user_format
