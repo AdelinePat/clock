@@ -46,6 +46,11 @@ class Alarm:
                 display.error_NaN()
                 continue
 
+            #Verify if the input contain exactly 6 numbers
+            if len(user_alarm) != 6:
+                display.error_number_length()
+                continue
+
             #Verify if it's a valid hour with datetime error directly
             try:
                 test = datetime.datetime(1970, 1, 1, int(user_alarm[:2]), int(user_alarm[2:4]), int(user_alarm[4:]))
@@ -53,16 +58,15 @@ class Alarm:
                 display.error_invalid_time()
                 continue
 
-            #Verify if the input contain exactly 6 numbers
-            if len(user_alarm) != 6:
-                display.error_number_length()
-                continue
-
             if self.mode == True:
                 user_format = display.input_user_format(user_alarm)
                         
                 if user_format != "AM" and user_format != "PM":
                     display.error_format()
+                    continue
+
+                if int(user_alarm[:2]) > 12:
+                    display.error_invalid_time(self.mode)
                     continue
 
                 self.format = user_format
@@ -73,15 +77,36 @@ class Alarm:
 
             display.message_alarm_valid()
                 
-            self.alarm = (int(user_alarm[0:2]), int(user_alarm[2:4]), int(user_alarm[4:]))
+            self.alarm = (user_alarm[:2], user_alarm[2:4], user_alarm[4:])
+
+            
+            if int(user_alarm[:2]) > 11:
+                if user_alarm[:2] == "12":
+                    self.ampm_hour = user_alarm[:2]
+                else:
+                    if int(user_alarm[:2]) < 22:
+                        self.ampm_hour = "0" + str(int(user_alarm[:2])-12)
+                    else:
+                        self.ampm_hour = str(int(user_alarm[:2])-12)
+                self.format = "PM"
+            
+            else:
+                if user_alarm[:2] == "00":
+                    self.ampm_hour = "12"
+                else:
+                    self.ampm_hour = user_alarm[:2]
+                self.format = "AM"
+                    
+            
+
             return
         
     def alarm_ring(self):
-        display.alarm_on()
+        display.alarm_on(self.mode)
         #play.sound(self.alarm_sound)
         return True
     
     def alarm_stop(self):
-        display.alarm_off()
+        display.alarm_off(self.mode)
         #stop.sound(self.alarm_sound)
         return False

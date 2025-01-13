@@ -10,6 +10,8 @@ def command_terminal(event, clock_time, alarm_time):
         match command:
             case "mode" | "m":
                 clock_time.mode = not clock_time.mode
+                if alarm_time:
+                    alarm_time.mode = not alarm_time.mode
                 # if clock_time.format == "AM":
                 #    clock_time.clock = (clock_time.clock[0]+12, clock_time.clock[1], clock_time.clock[2])
                 #    clock_time.format = "PM"
@@ -24,7 +26,7 @@ def command_terminal(event, clock_time, alarm_time):
                 continue
             case "alarme" | "a":
                 if not alarm_time:
-                    alarm_time = Alarm((0,0,0),0,"", clock_time.mode)
+                    alarm_time = Alarm(("00","00","00"),0,"", clock_time.mode)
                     threading.Thread(target=alarm_time.display_alarm, args=(clock_time,)).start()
                 alarm_time.change_alarm()
                 continue

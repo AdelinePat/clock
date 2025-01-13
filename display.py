@@ -17,6 +17,8 @@ dic_cursor = {
 
     "cursor_after_alarm": "\033[s\033[H\033[1B\033[8C",
     "delete_after_alarm": "\033[s\033[H\033[1B\033[8C\033[0K",
+    "cursor_after_alarm_12h": "\033[s\033[H\033[1B\033[11C",
+    "delete_after_alarm_12h": "\033[s\033[H\033[1B\033[11C\033[0K",
 
     "cursor_move_left_2": "\033[2D",
     "cursor_move_left_8": "\033[8D",
@@ -43,11 +45,17 @@ def alarm_12h(alarm_time):
 def alarm_24h(alarm_time):
     print(f"{dic_cursor["delete_line_2-alarm"]}{alarm_time.alarm[0]}:{alarm_time.alarm[1]}:{alarm_time.alarm[2]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
 
-def alarm_on():
-    print(f"{dic_cursor["cursor_after_alarm"]} Ring Ring!! Ring Ring!!{dic_cursor["cursor_position_load"]}", end="", flush=True)
+def alarm_on(mode):
+    if mode == True:
+        print(f"{dic_cursor["cursor_after_alarm_12h"]} Ring Ring!! Ring Ring!!{dic_cursor["cursor_position_load"]}", end="", flush=True)
+    else:
+        print(f"{dic_cursor["cursor_after_alarm"]} Ring Ring!! Ring Ring!!{dic_cursor["cursor_position_load"]}", end="", flush=True)
 
-def alarm_off():
-    print(f"{dic_cursor["delete_after_alarm"]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
+def alarm_off(mode):
+    if mode == True:
+        print(f"{dic_cursor["delete_after_alarm_12h"]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
+    else:
+        print(f"{dic_cursor["delete_after_alarm"]}{dic_cursor["cursor_position_load"]}", end="", flush=True)
 
 # Line 3 - Message
 
