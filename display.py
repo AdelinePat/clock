@@ -91,8 +91,11 @@ def input_user_alarm():
     return input(f"{dic_cursor["delete_line_5-input"]}Veuillez entrer l'alarme au format hh:mm:ss : ________{dic_cursor["cursor_move_left_8"]}").replace(":", "")
 
 # Line 6 - Errors
-def error_invalid_time():
-    print(f"{dic_cursor["delete_line_6-error"]}/!\\Entrer une heure valide! (00-23):(00-59):(00-59)", end="")
+def error_invalid_time(mode):
+    if mode == True:
+        print(f"{dic_cursor["delete_line_6-error"]}/!\\Entrer une heure valide! (01-12):(00-59):(00-59)", end="")
+    else:
+        print(f"{dic_cursor["delete_line_6-error"]}/!\\Entrer une heure valide! (00-23):(00-59):(00-59)", end="")
 
 def error_NaN():
     print(f"{dic_cursor["delete_line_6-error"]}/!\\Enter uniquement des chiffres ou des \":\"!", end="")

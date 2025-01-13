@@ -23,7 +23,7 @@ class Clock:
             try:
                 clock_datetime = datetime.datetime(1970, 1, 1, int(self.clock[0]), int(self.clock[1]), int(self.clock[2]))
             except Exception:
-                display.error_invalid_time()
+                display.error_invalid_time(self.mode)
 
             if self.mode == False:
                 display.clock_24h(self)
@@ -54,16 +54,16 @@ class Clock:
                         display.error_NaN()
                         continue
 
+                    #Verify if the input contain exactly 6 numbers
+                    if len(user_clock) != 6:
+                        display.error_number_length()
+                        continue
+
                     #Verify if it's a valid hour with datetime error directly
                     try:
                         test = datetime.datetime(1970, 1, 1, int(user_clock[:2]), int(user_clock[2:4]), int(user_clock[4:]))
                     except Exception:
                         display.error_invalid_time()
-                        continue
-
-                    #Verify if the input contain exactly 6 numbers
-                    if len(user_clock) != 6:
-                        display.error_number_length()
                         continue
 
                     if self.mode == True:
@@ -74,7 +74,7 @@ class Clock:
                             continue
 
                         if int(user_clock[:2]) > 12:
-                            display.error_invalid_time
+                            display.error_invalid_time(self.mode)
                             continue
 
                         self.format = user_format
