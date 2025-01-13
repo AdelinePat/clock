@@ -37,8 +37,8 @@ def command_terminal(event, clock_time, alarm_time):
                 display.message_start()
                 continue
             case "commandes" | "c":
-                display.commands()
-                # display.message_help()
+                # display.commands()
+                display.message_help()
                 continue
             # case "quitter" | "q":
             #     display.message_byebye()

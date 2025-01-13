@@ -67,7 +67,7 @@ def message_start():
     print(f"{dic_cursor["delete_line_3-message"]}Horloge redémarré.", end="", flush=True) #TOKI WO UGOKIDASU.
 
 def message_help():
-    print(f"{dic_cursor["delete_line_3-message"]}Taper (C)ommades pour la liste de commande.", end="", flush=True) #TOKI WO UGOKIDASU.
+    print(f"{dic_cursor["delete_line_3-message"]}(H)orloge ; (A)larme ; (M)ode ; (S)top ; (D)émarrer ; (C)ommandes pour réafficher cette liste", end="", flush=True) #TOKI WO UGOKIDASU.
 
 def message_byebye():
     print(f"{dic_cursor["delete_line_3-message"]}Le programme va quitter...", end="", flush=True) #My final message.
